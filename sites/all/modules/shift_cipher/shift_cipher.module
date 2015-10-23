@@ -24,7 +24,7 @@ function shift_cipher_form() {
     '#title' => 'Shift Value',
     '#type' => 'textfield',
     '#description' => t('Enter the shift value'),
-    '#element_validate' => array('element_validate_number'),
+    '#element_validate' => array('element_validate_integer_positive'),
     '#required' => TRUE,
   );
 
@@ -32,7 +32,7 @@ function shift_cipher_form() {
     '#title' => 'Direction',
     '#type' => 'textfield',
     '#description' => t('Enter the shift direction'),
-    // '#element_validate' => array('element_validate_left_right'),
+    '#element_validate' => array('element_validate_left_right'),
     '#required' => TRUE,
   );
 
@@ -52,6 +52,18 @@ function shift_cipher_form() {
   return $form;
 }
 
+function element_validate_left_right($element) {
+  if (!((strToLower($element['#value'])) === 'right' || (strToLower($element['#value']))  === 'left')) {
+    form_error($element, t('please only enter left or right'));
+  }
+}
+
+// function element_validate_text($element) {
+//   if (!($element['#value'] {
+//     form_error($element, t('please only enter letters, a space, or valid punctuation(.,?!:)'));
+//   }
+// }
+
 function shift_cipher_form_submit($form, &$form_state) {
   $shift_value = $form_state['values']['shift_value'];
   $direction = $form_state['values']['direction'];
@@ -59,23 +71,28 @@ function shift_cipher_form_submit($form, &$form_state) {
 
   $letters = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
 
-  $split_string = str_split($phrase);
+  $lcphrase = strToLower($phrase);
+  $split_string = str_split($lcphrase);
   $cipher_array = array();
 
   foreach ($split_string as $single_letter) {
-    $find_key = array_search($single_letter, $letters);
-    if ($direction === 'right') {
-      $find_key = $find_key + $shift_value;
-    } elseif ($direction === 'left') {
-      $find_key = $find_key - $shift_value;
-    }
-    if ($find_key > 25) {
-      $find_key = $find_key - 26;
-    } elseif ($find_key < 0) {
-      $find_key = 26 + $find_key;
-    }
-    $new_letter = $letters[$find_key];
-    array_push($cipher_array, $new_letter);
+    if ($single_letter === ' ' || $single_letter === ',' || $single_letter === '?' || $single_letter === '.' || $single_letter === '!' || $single_letter === ':') {
+      array_push($cipher_array, $single_letter);
+    } else {
+      $find_key = array_search($single_letter, $letters);
+      if ($direction === 'right') {
+        $find_key = $find_key + $shift_value;
+      } elseif ($direction === 'left') {
+        $find_key = $find_key - $shift_value;
+      }
+      if ($find_key > 25) {
+        $find_key = $find_key - 26;
+      } elseif ($find_key < 0) {
+        $find_key = 26 + $find_key;
+      }
+      $new_letter = $letters[$find_key];
+      array_push($cipher_array, $new_letter);
+      }
     }
     $_SESSION['result'] = implode($cipher_array);
     $form_state['redirect'] = 'shift_cipher_results_page';
@@ -85,3 +102,9 @@ function shift_cipher_form_submit($form, &$form_state) {
 function shift_cipher_results() {
   return $_SESSION['result'];
 }
+
+
+
+
+
+ // === 'a' || $element['#value']  === 'b' || $element['#value']  === 'c' || $element['#value']  === 'd' || $element['#value']  === 'd' ||$element['#value']  === 'e' || $element['#value']  === 'f' ||$element['#value']  === 'g' || $element['#value']  === 'h' || $element['#value']  === 'i' || $element['#value']  === 'j' || $element['#value']  === 'k' || $element['#value']  === 'l' || $element['#value']  === 'm' || $element['#value']  === 'n' || $element['#value']  === 'o' || $element['#value']  === 'p' || $element['#value']  === 'q' || $element['#value']  === 'r' || $element['#value']  === 's' || $element['#value']  === 't' || $element['#value']  === 'u' || $element['#value']  === 'v' || $element['#value']  === 'w' || $element['#value']  === 'x' || $element['#value']  === 'y' || $element['#value']  === 'z' || $element['#value']  === ' ' || $element['#value'] === ',' || $element['#value'] === '?' || $element['#value'] === '.' || $element['#value'] === '!' || $element['#value'] === ':'))
