@@ -64,7 +64,16 @@ function shift_cipher_form_submit($form, &$form_state) {
 
   foreach ($split_string as $single_letter) {
     $find_key = array_search($single_letter, $letters);
-    $find_key = $find_key + $shift_value;
+    if ($direction === 'right') {
+      $find_key = $find_key + $shift_value;
+    } elseif ($direction === 'left') {
+      $find_key = $find_key - $shift_value;
+    }
+    if ($find_key > 25) {
+      $find_key = $find_key - 26;
+    } elseif ($find_key < 0) {
+      $find_key = 26 + $find_key;
+    }
     $new_letter = $letters[$find_key];
     array_push($cipher_array, $new_letter);
     }
