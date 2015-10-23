@@ -18,3 +18,29 @@ function shift_cipher_menu() {
 
   return $items;
 }
+
+function shift_cipher_form() {
+  $form['shift_value'] = array(
+    '#title' => 'Shift Value',
+    '#type' => 'textfield',
+    '#description' => t('Enter the shift value'),
+    '#element_validate' => array('element_validate_number'),
+    '#required' => TRUE,
+  );
+
+  $form['direction'] = array(
+    '#title' => 'Direction',
+    '#type' => 'textfield',
+    '#description' => t('Enter the shift direction'),
+    // '#element_validate' => array('element_validate_left_right'),
+    '#required' => TRUE,
+  );
+
+
+
+  $form['phrase']
+
+  $form['submit']
+
+
+}
