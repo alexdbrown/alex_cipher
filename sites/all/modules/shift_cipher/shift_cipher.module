@@ -3,7 +3,7 @@
 function shift_cipher_menu() {
   $items['shift_cipher'] = array(
       'title' => 'Shift Cipher',
-      'page callback' => 'drupal_core_files',
+      'page callback' => 'drupal_get_form',
       'access callback' => TRUE,
       'page arguments' => array('shift_cipher_form'),
       'type' => MENU_NORMAL_ITEM,
@@ -13,7 +13,7 @@ function shift_cipher_menu() {
       'title' => 'Results',
       'page callback' => 'shift_cipher_results',
       'access callback' => TRUE,
-      'type' => MENU_CALLBACK;
+      'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -36,11 +36,43 @@ function shift_cipher_form() {
     '#required' => TRUE,
   );
 
+  $form['phrase'] = array(
+    '#title' => 'Phrase',
+    '#type' => 'textfield',
+    '#description' => t('Enter the phrase to be shift ciphered'),
+    // '#element_validate' => array('element_validate_text'),
+    '#required' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Shift Cipher Your Phrase!',
+  );
+
+  return $form;
+}
+
+function shift_cipher_form_submit($form, &$form_state) {
+  $shift_value = $form_state['values']['shift_value'];
+  $direction = $form_state['values']['direction'];
+  $phrase = $form_state['values']['phrase'];
+
+  $letters = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+
+  $split_string = str_split($phrase);
+  $cipher_array = array();
+
+  foreach ($split_string as $single_letter) {
+    $find_key = array_search($single_letter, $letters);
+    $find_key = $find_key + $shift_value;
+    $new_letter = $letters[$find_key];
+    array_push($cipher_array, $new_letter);
+    }
+    $_SESSION['result'] = implode($cipher_array);
+    $form_state['redirect'] = 'shift_cipher_results_page';
+}
 
 
-  $form['phrase']
-
-  $form['submit']
-
-
+function shift_cipher_results() {
+  return $_SESSION['result'];
 }
