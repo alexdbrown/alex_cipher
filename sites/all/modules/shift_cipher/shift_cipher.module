@@ -40,7 +40,7 @@ function shift_cipher_form() {
     '#title' => 'Phrase',
     '#type' => 'textfield',
     '#description' => t('Enter the phrase to be shift ciphered'),
-    // '#element_validate' => array('element_validate_text'),
+    '#element_validate' => array('element_validate_text'),
     '#required' => TRUE,
   );
 
@@ -53,21 +53,32 @@ function shift_cipher_form() {
 }
 
 function element_validate_left_right($element) {
-  if (!((strToLower($element['#value'])) === 'right' || (strToLower($element['#value']))  === 'left')) {
-    form_error($element, t('please only enter left or right'));
+  $direction_input = strtolower($element['#value']);
+  if (!($direction_input == 'right' || $direction_input == 'left')) {
+        form_error($element, t('please only enter left or right'));
   }
+
+
 }
 
-// function element_validate_text($element) {
-//   if (!($element['#value'] {
-//     form_error($element, t('please only enter letters, a space, or valid punctuation(.,?!:)'));
-//   }
-// }
+function element_validate_text($element) {
+  $lc_input = strtolower($element['#value']);
+  $split_string = str_split($lc_input);
+  $valid_inputs = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ' ', '.', '?', '!', ':');
+
+  foreach ($split_string as $input) {
+    if (!in_array($input, $valid_inputs)) {
+    form_error($element, t('please only enter letters, a space, or valid punctuation(.,?!:)'));
+
+    }
+  }
+}
 
 function shift_cipher_form_submit($form, &$form_state) {
   $shift_value = $form_state['values']['shift_value'];
   $direction = $form_state['values']['direction'];
   $phrase = $form_state['values']['phrase'];
+  $lcdirection = strtolower($direction);
 
   $letters = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
 
@@ -80,9 +91,9 @@ function shift_cipher_form_submit($form, &$form_state) {
       array_push($cipher_array, $single_letter);
     } else {
       $find_key = array_search($single_letter, $letters);
-      if ($direction === 'right') {
+      if ($lcdirection === 'right') {
         $find_key = $find_key + $shift_value;
-      } elseif ($direction === 'left') {
+      } elseif ($lcdirection === 'left') {
         $find_key = $find_key - $shift_value;
       }
       if ($find_key > 25) {
